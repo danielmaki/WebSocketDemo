@@ -1,4 +1,4 @@
-﻿using WebSocketDemo.Wrappers;
+﻿using WebSocketDemo.Models.Wrappers;
 
 namespace WebSocketDemo.Logic
 {

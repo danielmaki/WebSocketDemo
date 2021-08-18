@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using WebSocketDemo.Logic.Delegates;
-using WebSocketDemo.Providers;
-using WebSocketDemo.Wrappers;
+using WebSocketDemo.Models.Wrappers;
+using WebSocketDemo.Services.Providers;
 
 namespace WebSocketDemo.Logic
 {

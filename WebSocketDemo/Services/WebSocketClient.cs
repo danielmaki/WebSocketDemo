@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using WebSocketDemo.Factories;
+using WebSocketDemo.Services.Factories;
 using WebSocketDemo.Models;
 using WebSocketDemo.Logic;
 using WebSocketDemo.Logic.Delegates;

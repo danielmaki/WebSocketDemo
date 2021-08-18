@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
 
 using WebSocketDemo.Logic;
-using WebSocketDemo.Providers;
+using WebSocketDemo.Services.Providers;
 
 namespace WebSocketDemo.Hosting
 {

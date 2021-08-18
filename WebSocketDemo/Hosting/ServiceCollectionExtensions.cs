@@ -5,13 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Polly;
 
-using WebSocketDemo.Factories;
 using WebSocketDemo.Logic;
 using WebSocketDemo.Logic.Delegates;
 using WebSocketDemo.Logic.Policies;
 using WebSocketDemo.Models;
 using WebSocketDemo.Services;
-using WebSocketDemo.Wrappers;
+using WebSocketDemo.Services.Factories;
+using WebSocketDemo.Models.Wrappers;
 
 namespace WebSocketDemo.Hosting
 {
