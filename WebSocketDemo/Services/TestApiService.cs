@@ -9,8 +9,7 @@ public class TestApiService : ITestApiService
     private readonly ILogger<TestApiService> logger;
     private readonly WebSocketClient<TestApi> client;
 
-    public TestApiService(
-        ILogger<TestApiService> logger, WebSocketClient<TestApi> client)
+    public TestApiService(ILogger<TestApiService> logger, WebSocketClient<TestApi> client)
     {
         this.logger = logger;
         this.client = client;
@@ -20,19 +19,7 @@ public class TestApiService : ITestApiService
     {
         var message = await client.Receive(cancellationToken);
 
-        if (message == string.Empty)
-        {
-            return;
-        }
-
-        try
-        {
-            logger.LogDebug($"Received message: {message}");
-        }
-        catch (Exception e)
-        {
-            logger.LogWarning($"Rejecting message due to unhandled exception: {e.Message} {e.StackTrace}");
-        }
+        logger.LogDebug("Received message: {message}", message);
     }
 
     public Task SendHeartbeat(long requestId)

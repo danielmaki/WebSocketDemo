@@ -44,35 +44,35 @@ public class KeepWebSocketConnected<T> : IBehavior where T : IApi, new()
         logger.LogInformation("I try to keep connected to the websocket {name}.", api.Name);
     }
 
-    public virtual Task Open()
+    public virtual Task Open(CancellationToken cancellationToken)
     {
-        return policy.Run(() => client.Connect());
+        return policy.Run(() => client.Connect(cancellationToken));
     }
 
-    private Task OnApplicationStart()
+    private Task OnApplicationStart(CancellationToken cancellationToken)
     {
         logger.LogDebug("Establishing websocket connection to {name} on application startup.", api.Name);
 
-        return Open();
+        return Open(cancellationToken);
     }
 
-    private async Task OnApplicationStop()
+    private async Task OnApplicationStop(CancellationToken cancellationToken)
     {
         logger.LogDebug("Closing websocket connection to {name}.", api.Name);
 
         connectionLost.When -= OnConnectionLost;
-        await client.Close();
+        await client.Close(cancellationToken);
 
         logger.LogInformation("Websocket connection to {name} is now closed.", api.Name);
         logger.LogInformation("Total times connection to {name} was lost: {counter}.", api.Name, connectionLostCounter);
     }
 
-    private Task OnConnectionLost()
+    private Task OnConnectionLost(CancellationToken cancellationToken)
     {
         connectionLostCounter += 1;
 
         logger.LogInformation("Websocket connection to {name} was lost for the {counter}. time, trying to re-establish connection.", api.Name, connectionLostCounter);
 
-        return Open();
+        return Open(cancellationToken);
     }
 }

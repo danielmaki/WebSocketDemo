@@ -40,7 +40,7 @@ public class Trigger<T> where T : Delegate
     /// <remarks>Invocation happens in parallel so ordering when Conditions are invoked is not guaranteed.</remarks>
     public virtual Task Invoke(string description, params object[] args)
     {
-        logger.LogDebug($"Trigger {description}");
+        logger.LogDebug("Trigger {description}", description);
 
         return value?.Value?.InvokeParallelAsync(args) ?? Task.CompletedTask;
     }

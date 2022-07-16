@@ -8,17 +8,19 @@ using WebSocketDemo.Wrappers;
 
 namespace WebSocketDemo.Services;
 
-public class WebSocketClient<T> : IDisposable where T : IApi, new()
+public class WebSocketClient<T> : IAsyncDisposable where T : IApi, new()
 {
     private readonly ILogger<WebSocketClient<T>> logger;
     private readonly ClientWebSocketFactory clientWebSocketFactory;
-    private ClientWebSocket client;
     private readonly Trigger<WebSocketConnected<T>> wsConnectedTrigger;
     private readonly Trigger<WebSocketConnectionLost<T>> wsConnectionLostTrigger;
+
+    private ClientWebSocket client;
     private WebSocketState connectionStatus;
-    private TaskCompletionSource<object> connected;
-    public virtual bool IsConnected => connected.Task.IsCompletedSuccessfully;
+    private TaskCompletionSource connected;
     private readonly T api = new();
+
+    public virtual bool IsConnected => connected.Task.IsCompletedSuccessfully;
 
     public WebSocketClient(ILogger<WebSocketClient<T>> logger,
         ClientWebSocketFactory clientWebSocketFactory,
@@ -27,27 +29,23 @@ public class WebSocketClient<T> : IDisposable where T : IApi, new()
         this.logger = logger;
         this.clientWebSocketFactory = clientWebSocketFactory;
 
-        CreateNewClient();
-        connected = new TaskCompletionSource<object>();
+        client = clientWebSocketFactory.Create();
+        connectionStatus = client.State;
+        connected = new TaskCompletionSource();
 
         this.wsConnectedTrigger = wsConnectedTrigger;
         this.wsConnectionLostTrigger = wsConnectionLostTrigger;
     }
 
-    private void CreateNewClient()
-    {
-        DisposeClient();
-        client = clientWebSocketFactory.Create();
-        connectionStatus = client.State;
-    }
-
     public async Task Connect(CancellationToken cancellationToken = default)
     {
-        logger.LogDebug($"Connecting to {api.Name} websocket.");
+        logger.LogDebug("Connecting to websocket {name}.", api.Name);
 
         if (client.State != WebSocketState.None)
         {
-            CreateNewClient();
+            await DisposeClientAsync();
+            client = clientWebSocketFactory.Create();
+            connectionStatus = client.State;
         }
 
         try
@@ -56,67 +54,58 @@ public class WebSocketClient<T> : IDisposable where T : IApi, new()
         }
         catch (TaskCanceledException e)
         {
-            logger.LogError($"Attempt to connect to {api.Endpoint} websocket was canceled: {e}");
+            logger.LogError("Attempt to connect to {endpoint} websocket was canceled: {e}", api.Endpoint, e.Message);
             connected.SetCanceled(cancellationToken);
             throw;
         }
         catch (WebSocketException e)
         {
-            logger.LogError($"Attempt to connect to {api.Endpoint} websocket failed, retrying...\n{e.Message}");
+            logger.LogError("Attempt to connect to {endpoint} websocket failed: {e}", api.Endpoint, e.Message);
             throw;
         }
         catch (Exception e)
         {
-            logger.LogError($"Error connecting to {api.Endpoint} websocket: {e.Message}");
+            logger.LogError("Error connecting to {endpoint} websocket: {e}", api.Endpoint, e.Message);
             connected.SetException(e);
             throw;
         }
 
-        logger.LogInformation($"Established connection to {api.Name} at endpoint {api.Endpoint}.");
+        logger.LogInformation("Established connection to {name} at endpoint {endpoint}.", api.Name, api.Endpoint);
 
-        connected.SetResult(null);
+        connected.SetResult();
 
-        await wsConnectedTrigger.Invoke($"websocket connected to {api.Name}");
+        await wsConnectedTrigger.Invoke($"Websocket connected to {api.Name}");
     }
 
     public async Task<string> Receive(CancellationToken cancellationToken = default)
     {
-        var buffer = new ArraySegment<byte>(new byte[1024 * 4]);
-        var data = string.Empty;
-
         await WaitForConnection(cancellationToken);
 
-        try
+        var buffer = new ArraySegment<byte>(new byte[1024 * 4]);
+        WebSocketReceiveResult result;
+        using var stream = new MemoryStream();
+        do
         {
-            WebSocketReceiveResult result;
-            using var ms = new MemoryStream();
-            do
+            result = await client.ReceiveAsync(buffer, cancellationToken);
+            if (buffer.Array == null)
             {
-                result = await client.ReceiveAsync(buffer, cancellationToken);
-                ms.Write(buffer.Array, buffer.Offset, result.Count);
-            } while (!result.EndOfMessage);
+                break;
+            }
+            stream.Write(buffer.Array, buffer.Offset, result.Count);
+        }
+        while (!result.EndOfMessage);
 
-            if (result.MessageType == WebSocketMessageType.Close)
-            {
-                logger.LogWarning($"{api.Name} websocket received Close message, connection now closed.");
-            }
-            else
-            {
-                ms.Seek(0, SeekOrigin.Begin);
-                using var reader = new StreamReader(ms, Encoding.UTF8);
-                data = await reader.ReadToEndAsync();
-            }
-        }
-        catch (TaskCanceledException)
+        if (result.MessageType == WebSocketMessageType.Close)
         {
-            logger.LogWarning($"Receive operation for {api.Name} websocket was canceled.");
-        }
-        catch (Exception e)
-        {
-            logger.LogError($"Error while receiving message from {api.Name} websocket: {e.Message}");
+            logger.LogWarning("Websocket {name} received Close message, connection now closed.", api.Name);
+
+            return "Closed";
         }
 
-        return data;
+        stream.Seek(0, SeekOrigin.Begin);
+        using var reader = new StreamReader(stream, Encoding.UTF8);
+
+        return await reader.ReadToEndAsync();
     }
 
     public virtual async Task Send(string data, CancellationToken cancellationToken = default)
@@ -125,31 +114,33 @@ public class WebSocketClient<T> : IDisposable where T : IApi, new()
 
         try
         {
+            logger.LogDebug("Send message through websocket {name}: {message}", api.Name, data);
+
             await client.SendAsync(Encoding.UTF8.GetBytes(data), WebSocketMessageType.Text, true, cancellationToken);
         }
         catch (TaskCanceledException)
         {
-            logger.LogWarning($"Send operation {api.Name} websocket was canceled.");
+            logger.LogWarning("Send operation was canceled for websocket {name}.", api.Name);
         }
         catch (Exception e)
         {
-            logger.LogError($"Error while trying to send message to {api.Name} websocket: {e.Message}");
+            logger.LogError("Error while trying to send message to websocket {name}: {e}", api.Name, e.Message);
         }
     }
 
-    private void OnConnectionStatusChanged()
+    private void OnConnectionStatusChanged(CancellationToken cancellationToken)
     {
-        logger.LogDebug($"{api.Name} websocket connection status has changed from '{connectionStatus}' to '{client.State}'.");
+        logger.LogDebug("Status of websocket connection to {name} has changed from '{status}' to '{state}'.", api.Name, connectionStatus, client.State);
 
         connectionStatus = client.State;
 
         if (connectionStatus == WebSocketState.CloseReceived || connectionStatus == WebSocketState.Closed || connectionStatus == WebSocketState.Aborted)
         {
             // Try cancelling old connection wait and create new one.
-            connected.TrySetCanceled();
-            connected = new TaskCompletionSource<object>();
+            connected.TrySetCanceled(cancellationToken);
+            connected = new TaskCompletionSource();
 
-            wsConnectionLostTrigger?.InvokeWithoutSynchronization($"websocket connection lost for {api.Name}");
+            wsConnectionLostTrigger?.InvokeWithoutSynchronization($"Websocket connection to {api.Name} lost", cancellationToken);
         }
     }
 
@@ -157,14 +148,14 @@ public class WebSocketClient<T> : IDisposable where T : IApi, new()
     {
         if (connectionStatus != client.State)
         {
-            OnConnectionStatusChanged();
+            OnConnectionStatusChanged(cancellationToken);
         }
 
         if (!IsConnected)
         {
-            logger.LogTrace($"Waiting for {api.Name} websocket connection.");
+            logger.LogTrace("Waiting for websocket connection to {name}.", api.Name);
 
-            using (cancellationToken.Register(() => connected.TrySetCanceled()))
+            using (cancellationToken.Register(() => connected.TrySetCanceled(cancellationToken)))
             {
                 try
                 {
@@ -172,17 +163,16 @@ public class WebSocketClient<T> : IDisposable where T : IApi, new()
                 }
                 catch (TaskCanceledException)
                 {
-                    logger.LogInformation($"Connection to {api.Name} websocket was canceled.");
-
+                    logger.LogInformation("Websocket connection to {name} was canceled.", api.Name);
                     throw;
                 }
             }
         }
     }
 
-    public async Task Close(CancellationToken cancellationToken = default)
+    public async Task Close(CancellationToken cancellationToken)
     {
-        logger.LogTrace($"Closing {api.Name} websocket connection.");
+        logger.LogTrace("Closing websocket connection to {name}.", api.Name);
 
         connectionStatus = client.State;
 
@@ -190,43 +180,46 @@ public class WebSocketClient<T> : IDisposable where T : IApi, new()
         {
             try
             {
-                await client.CloseAsync(WebSocketCloseStatus.NormalClosure, "Normal Closure", cancellationToken);
+                await client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal Closure", cancellationToken);
             }
             catch (Exception e)
             {
-                logger.LogError($"Error closing {api.Name} websocket connection: {e.Message}");
+                logger.LogError("Error closing websocket connection to {name}: {e}", api.Name, e.Message);
             }
         }
     }
 
-    public void DisposeClient()
+    public Task DisposeClientAsync()
     {
         if (client == null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         connectionStatus = client.State;
+
         if (connectionStatus == WebSocketState.Connecting || connectionStatus == WebSocketState.Open)
         {
-            logger.LogDebug($"Aborting {api.Name} websocket connection.");
+            logger.LogDebug("Aborting websocket connection to {name}.", api.Name);
             client.Abort();
         }
 
         client.Dispose();
+
+        return Task.CompletedTask;
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Dispose(true);
+        await DisposeAsync(true);
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    protected virtual async Task DisposeAsync(bool disposing)
     {
         if (disposing)
         {
-            DisposeClient();
+            await DisposeClientAsync();
         }
     }
 }

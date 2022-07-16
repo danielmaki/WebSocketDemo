@@ -6,4 +6,4 @@ namespace WebSocketDemo.Domain.Delegates;
 /// Delegate that is invoked when the websocket connection is lost.
 /// </summary>
 /// <returns>Asynchronous operation that is run when the connection is lost.</returns>
-public delegate Task WebSocketConnectionLost<T>() where T : IApi;
+public delegate Task WebSocketConnectionLost<T>(CancellationToken cancellationToken) where T : IApi;

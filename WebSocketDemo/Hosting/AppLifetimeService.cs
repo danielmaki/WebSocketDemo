@@ -28,8 +28,8 @@ public class AppLifetimeService : IHostedService
     {
         logger.LogInformation("{serivce} has started", nameof(AppLifetimeService));
 
-        applicationLifetime.ApplicationStarted.Register(() => applicationStart.InvokeWithoutSynchronization("application start"));
-        applicationLifetime.ApplicationStopping.Register(() => applicationStop.Invoke("application stop"));
+        applicationLifetime.ApplicationStarted.Register(() => applicationStart.InvokeWithoutSynchronization("application start", cancellationToken));
+        applicationLifetime.ApplicationStopping.Register(() => applicationStop.Invoke("application stop", cancellationToken));
 
         await behaviorLifetime.EnableBehaviors();
     }
