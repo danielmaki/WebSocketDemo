@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WebSocketDemo.Logic;
-using WebSocketDemo.Services.Providers;
+using WebSocketDemo.Domain.Behaviors.Interfaces;
 
 namespace WebSocketDemo.Hosting;
 

@@ -1,4 +1,4 @@
-﻿namespace WebSocketDemo.Logic;
+﻿namespace WebSocketDemo.Wrappers;
 
 /// <summary>
 /// Filter base class that can be used to filter delegates.

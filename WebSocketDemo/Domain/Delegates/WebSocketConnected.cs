@@ -1,6 +1,6 @@
 ﻿using WebSocketDemo.Models.Interfaces;
 
-namespace WebSocketDemo.Logic.Delegates;
+namespace WebSocketDemo.Domain.Delegates;
 
 /// <summary>
 /// Delegate that is invoked when the websocket connection is established.

@@ -1,4 +1,4 @@
-﻿namespace WebSocketDemo.Logic.Delegates;
+﻿namespace WebSocketDemo.Domain.Delegates;
 
 /// <summary>
 /// Delegate that is invoked when application is stopping.

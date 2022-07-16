@@ -1,6 +1,4 @@
-﻿using WebSocketDemo.Models.Wrappers;
-
-namespace WebSocketDemo.Logic;
+﻿namespace WebSocketDemo.Wrappers;
 
 /// <summary>
 /// A class for Conditions that connect Delegates and Filters together.

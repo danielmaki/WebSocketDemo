@@ -1,4 +1,4 @@
-﻿namespace WebSocketDemo.Logic.Policies.Interfaces;
+﻿namespace WebSocketDemo.Domain.Policies.Interfaces;
 
 /// <summary>
 /// Handles execution of asynchronous actions.

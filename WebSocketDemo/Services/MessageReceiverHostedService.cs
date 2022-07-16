@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebSocketDemo.Logic.Policies.Interfaces;
+using WebSocketDemo.Domain.Policies.Interfaces;
 using WebSocketDemo.Services.Interfaces;
 
 namespace WebSocketDemo.Services;

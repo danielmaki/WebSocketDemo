@@ -1,6 +1,6 @@
 ﻿using System.Net.WebSockets;
 
-namespace WebSocketDemo.Services.Factories;
+namespace WebSocketDemo.Factories;
 
 public class ClientWebSocketFactory
 {

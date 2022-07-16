@@ -1,16 +1,17 @@
 ﻿using System.Net.WebSockets;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
-using WebSocketDemo.Logic;
-using WebSocketDemo.Logic.Delegates;
-using WebSocketDemo.Logic.Policies;
-using WebSocketDemo.Logic.Policies.Interfaces;
+using WebSocketDemo.Domain.Behaviors;
+using WebSocketDemo.Domain.Behaviors.Interfaces;
+using WebSocketDemo.Domain.Delegates;
+using WebSocketDemo.Domain.Policies;
+using WebSocketDemo.Domain.Policies.Interfaces;
+using WebSocketDemo.Factories;
 using WebSocketDemo.Models;
 using WebSocketDemo.Models.Interfaces;
-using WebSocketDemo.Models.Wrappers;
 using WebSocketDemo.Services;
-using WebSocketDemo.Services.Factories;
 using WebSocketDemo.Services.Interfaces;
+using WebSocketDemo.Wrappers;
 
 namespace WebSocketDemo.Hosting;
 

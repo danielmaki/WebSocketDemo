@@ -1,4 +1,4 @@
-﻿namespace WebSocketDemo.Logic.Delegates;
+﻿namespace WebSocketDemo.Domain.Delegates;
 
 public static class DelegateExtensions
 {

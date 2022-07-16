@@ -1,8 +1,8 @@
 ﻿
 using Polly;
-using WebSocketDemo.Logic.Policies.Interfaces;
+using WebSocketDemo.Domain.Policies.Interfaces;
 
-namespace WebSocketDemo.Logic.Policies;
+namespace WebSocketDemo.Domain.Policies;
 
 public class WebsocketRetryPolicy : IRetryPolicy
 {

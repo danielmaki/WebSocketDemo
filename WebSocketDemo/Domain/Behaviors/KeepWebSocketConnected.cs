@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using WebSocketDemo.Logic.Delegates;
-using WebSocketDemo.Logic.Policies.Interfaces;
+using WebSocketDemo.Domain.Behaviors.Interfaces;
+using WebSocketDemo.Domain.Delegates;
+using WebSocketDemo.Domain.Policies.Interfaces;
 using WebSocketDemo.Models.Interfaces;
 using WebSocketDemo.Services;
+using WebSocketDemo.Wrappers;
 
-namespace WebSocketDemo.Logic;
+namespace WebSocketDemo.Domain.Behaviors;
 
 public class KeepWebSocketConnected<T> : IBehavior where T : IApi, new()
 {

@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using WebSocketDemo.Domain.Delegates;
+using WebSocketDemo.Hosting;
 
-using WebSocketDemo.Logic.Delegates;
-using WebSocketDemo.Models.Wrappers;
-using WebSocketDemo.Services.Providers;
-
-namespace WebSocketDemo.Logic;
+namespace WebSocketDemo.Wrappers;
 
 /// <summary>
 /// A class that is capable of triggering an event.

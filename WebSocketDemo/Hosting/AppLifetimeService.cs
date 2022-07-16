@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebSocketDemo.Logic;
-using WebSocketDemo.Logic.Delegates;
+using WebSocketDemo.Domain.Delegates;
+using WebSocketDemo.Wrappers;
 
 namespace WebSocketDemo.Hosting;
 

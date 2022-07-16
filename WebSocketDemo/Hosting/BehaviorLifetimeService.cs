@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using WebSocketDemo.Logic;
+using WebSocketDemo.Domain.Behaviors.Interfaces;
 
 namespace WebSocketDemo.Hosting;
 

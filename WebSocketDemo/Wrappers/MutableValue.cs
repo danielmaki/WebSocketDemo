@@ -1,4 +1,4 @@
-﻿namespace WebSocketDemo.Models.Wrappers;
+﻿namespace WebSocketDemo.Wrappers;
 
 /// <summary>
 /// A value wrapper that allows getting and setting the value of instance.

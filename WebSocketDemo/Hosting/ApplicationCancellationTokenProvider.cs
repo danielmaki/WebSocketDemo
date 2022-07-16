@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.Extensions.Hosting;
 
-namespace WebSocketDemo.Services.Providers;
+namespace WebSocketDemo.Hosting;
 
 public class ApplicationCancellationTokenProvider
 {

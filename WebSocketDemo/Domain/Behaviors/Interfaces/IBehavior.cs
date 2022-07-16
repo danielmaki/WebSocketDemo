@@ -1,4 +1,4 @@
-﻿namespace WebSocketDemo.Logic;
+﻿namespace WebSocketDemo.Domain.Behaviors.Interfaces;
 
 // TODO: Add additional methods for disabling and retrieve behavior state (enabled/disabled)
 
