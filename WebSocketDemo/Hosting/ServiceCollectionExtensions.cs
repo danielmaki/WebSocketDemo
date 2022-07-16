@@ -43,11 +43,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDomain(this IServiceCollection self)
     {
         self.AddTriggers();
-
         self.AddConditions();
-
         self.AddBehaviors();
-
         self.AddPolicies();
 
         return self;

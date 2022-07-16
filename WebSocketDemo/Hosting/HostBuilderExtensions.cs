@@ -24,11 +24,8 @@ public static class HostBuilderExtensions
         self.ConfigureServices((context, services) =>
         {
             services.AddModels();
-
             services.AddFactories();
-
             services.AddServices();
-
             services.AddDomain();
         });
 

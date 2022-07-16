@@ -1,6 +1,4 @@
-﻿
-using Microsoft.Extensions.Logging;
-
+﻿using Microsoft.Extensions.Logging;
 using WebSocketDemo.Models;
 using WebSocketDemo.Services.Interfaces;
 
@@ -15,7 +13,6 @@ public class TestApiService : ITestApiService
         ILogger<TestApiService> logger, WebSocketClient<TestApi> client)
     {
         this.logger = logger;
-
         this.client = client;
     }
 

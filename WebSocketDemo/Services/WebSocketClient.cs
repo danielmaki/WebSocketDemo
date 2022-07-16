@@ -11,18 +11,13 @@ namespace WebSocketDemo.Services;
 public class WebSocketClient<T> : IDisposable where T : IApi, new()
 {
     private readonly ILogger<WebSocketClient<T>> logger;
-
     private readonly ClientWebSocketFactory clientWebSocketFactory;
     private ClientWebSocket client;
-
     private readonly Trigger<WebSocketConnected<T>> wsConnectedTrigger;
     private readonly Trigger<WebSocketConnectionLost<T>> wsConnectionLostTrigger;
-
     private WebSocketState connectionStatus;
-
     private TaskCompletionSource<object> connected;
     public virtual bool IsConnected => connected.Task.IsCompletedSuccessfully;
-
     private readonly T api = new();
 
     public WebSocketClient(ILogger<WebSocketClient<T>> logger,
@@ -30,11 +25,9 @@ public class WebSocketClient<T> : IDisposable where T : IApi, new()
         Trigger<WebSocketConnected<T>> wsConnectedTrigger, Trigger<WebSocketConnectionLost<T>> wsConnectionLostTrigger)
     {
         this.logger = logger;
-
         this.clientWebSocketFactory = clientWebSocketFactory;
 
         CreateNewClient();
-
         connected = new TaskCompletionSource<object>();
 
         this.wsConnectedTrigger = wsConnectedTrigger;
@@ -180,6 +173,7 @@ public class WebSocketClient<T> : IDisposable where T : IApi, new()
                 catch (TaskCanceledException)
                 {
                     logger.LogInformation($"Connection to {api.Name} websocket was canceled.");
+
                     throw;
                 }
             }

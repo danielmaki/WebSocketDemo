@@ -1,5 +1,4 @@
-﻿
-using Polly;
+﻿using Polly;
 using WebSocketDemo.Domain.Policies.Interfaces;
 
 namespace WebSocketDemo.Domain.Policies;
