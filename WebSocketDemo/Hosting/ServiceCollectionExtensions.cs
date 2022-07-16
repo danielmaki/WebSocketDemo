@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using WebSocketDemo.Logic;
@@ -36,6 +35,19 @@ public static class ServiceCollectionExtensions
         self.AddSingleton<WebSocketClient<TestApi>>();
         self.AddSingleton<ITestApiService, TestApiService>();
         self.AddHostedService<MessageReceiverHostedService<ITestApiService>>();
+
+        return self;
+    }
+
+    public static IServiceCollection AddDomain(this IServiceCollection self)
+    {
+        self.AddTriggers();
+
+        self.AddConditions();
+
+        self.AddBehaviors();
+
+        self.AddPolicies();
 
         return self;
     }
@@ -96,19 +108,6 @@ public static class ServiceCollectionExtensions
     {
         IAsyncPolicy websocketRetrypolicy = Policy.Handle<WebSocketException>().WaitAndRetryForeverAsync(x => TimeSpan.FromSeconds(0.1));
         self.AddSingleton<IRetryPolicy, WebsocketRetryPolicy>(x => new WebsocketRetryPolicy(websocketRetrypolicy));
-
-        return self;
-    }
-
-    public static IServiceCollection AddLogic(this IServiceCollection self)
-    {
-        self.AddTriggers();
-
-        self.AddConditions();
-
-        self.AddBehaviors();
-
-        self.AddPolicies();
 
         return self;
     }

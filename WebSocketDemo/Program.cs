@@ -3,7 +3,7 @@ using WebSocketDemo.Hosting;
 
 var host = Host.CreateDefaultBuilder(args);
 
-host.UseLifetime();
+host.UseAppLifetime();
 
 host.UseAppServices();
 
