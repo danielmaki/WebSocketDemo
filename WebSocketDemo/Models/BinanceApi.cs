@@ -2,15 +2,15 @@
 
 namespace WebSocketDemo.Models;
 
-public class TestApi : IApi
+public class BinanceApi : IApi
 {
     public string Name { get; }
 
     public Uri Endpoint { get; }
 
-    public TestApi()
+    public BinanceApi()
     {
-        Name = "TEST API";
+        Name = "Binance API";
         Endpoint = new Uri("wss://stream.binance.com:9443/ws");
     }
 }

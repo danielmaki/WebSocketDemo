@@ -4,12 +4,12 @@ using WebSocketDemo.Services.Interfaces;
 
 namespace WebSocketDemo.Services;
 
-public class TestApiService : ITestApiService
+public class BinanceApiService : IBinanceApiService
 {
-    private readonly ILogger<TestApiService> logger;
-    private readonly WebSocketClient<TestApi> client;
+    private readonly ILogger<BinanceApiService> logger;
+    private readonly WebSocketClient<CdcApi> client;
 
-    public TestApiService(ILogger<TestApiService> logger, WebSocketClient<TestApi> client)
+    public BinanceApiService(ILogger<BinanceApiService> logger, WebSocketClient<CdcApi> client)
     {
         this.logger = logger;
         this.client = client;
@@ -20,10 +20,5 @@ public class TestApiService : ITestApiService
         var message = await client.Receive(cancellationToken);
 
         logger.LogDebug("Received message: {message}", message);
-    }
-
-    public Task SendHeartbeat(long requestId)
-    {
-        throw new NotImplementedException();
     }
 }

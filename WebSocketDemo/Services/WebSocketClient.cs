@@ -74,6 +74,8 @@ public class WebSocketClient<T> : IAsyncDisposable where T : IApi, new()
 
         connected.SetResult();
 
+        await WaitForConnection(cancellationToken);
+
         await wsConnectedTrigger.Invoke($"Websocket connected to {api.Name}");
     }
 

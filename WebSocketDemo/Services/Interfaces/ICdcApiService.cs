@@ -1,6 +1,6 @@
 ﻿namespace WebSocketDemo.Services.Interfaces;
 
-public interface ITestApiService : IMessageReceiverService
+public interface ICdcApiService : IMessageReceiverService
 {
     Task SendHeartbeat(long requestId);
 }
