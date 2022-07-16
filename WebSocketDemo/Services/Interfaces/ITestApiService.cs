@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace WebSocketDemo.Services
+namespace WebSocketDemo.Services.Interfaces;
+
+public interface ITestApiService : IMessageReceiverService
 {
-    public interface ITestApiService : IMessageReceiverService
-    {
-        Task SendHeartbeat(long requestId);
-    }
+    Task SendHeartbeat(long requestId);
 }

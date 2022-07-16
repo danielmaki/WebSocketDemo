@@ -1,17 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace WebSocketDemo.Services
+namespace WebSocketDemo.Services.Interfaces;
+
+/// <summary>
+/// Service for receiving messages asynchronously.
+/// </summary>
+public interface IMessageReceiverService
 {
     /// <summary>
-    /// Service for receiving messages asynchronously.
+    /// Method that asynchronously receives one message and then returns.
     /// </summary>
-    public interface IMessageReceiverService
-    {
-        /// <summary>
-        /// Method that asynchronously receives one message and then returns.
-        /// </summary>
-        /// <returns>Asynchronous operation that completes until there is a message available.</returns>
-        Task ReceiveMessage(CancellationToken cancellationToken);
-    }
+    /// <returns>Asynchronous operation that completes until there is a message available.</returns>
+    Task ReceiveMessage(CancellationToken cancellationToken);
 }

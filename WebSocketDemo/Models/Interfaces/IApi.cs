@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace WebSocketDemo.Models
-{
-    public interface IApi
-    {
-        public string Name { get; }
+namespace WebSocketDemo.Models.Interfaces;
 
-        public Uri Endpoint { get; }
-    }
+public interface IApi
+{
+    public string Name { get; }
+
+    public Uri Endpoint { get; }
 }

@@ -3,83 +3,88 @@
 using Microsoft.Extensions.Logging;
 
 using WebSocketDemo.Logic.Delegates;
-using WebSocketDemo.Logic.Policies;
-using WebSocketDemo.Models;
+using WebSocketDemo.Logic.Policies.Interfaces;
+using WebSocketDemo.Models.Interfaces;
 using WebSocketDemo.Services;
 
-namespace WebSocketDemo.Logic
+namespace WebSocketDemo.Logic;
+
+public class KeepWebSocketConnected<T> : IBehavior where T : IApi, new()
 {
-    public class KeepWebSocketConnected<T> : IBehavior where T : IApi, new()
+    private readonly ILogger<KeepWebSocketConnected<T>> logger;
+    private readonly IRetryPolicy policy;
+
+    private readonly WebSocketClient<T> client;
+
+    private readonly Condition<WebSocketConnectionLost<T>> connectionLost;
+
+    private readonly T api = new();
+
+    private uint connectionLostCounter;
+
+    public KeepWebSocketConnected(ILogger<KeepWebSocketConnected<T>> logger, IRetryPolicy policy, WebSocketClient<T> client,
+        Condition<ApplicationStart> applicationStart, Condition<ApplicationStop> applicationStop, Condition<WebSocketConnectionLost<T>> connectionLost)
     {
-        private readonly ILogger<KeepWebSocketConnected<T>> logger;
-        private readonly IRetryPolicy policy;
+        this.logger = logger;
+        this.policy = policy;
 
-        private readonly WebSocketClient<T> client;
+        this.client = client;
 
-        private readonly Condition<WebSocketConnectionLost<T>> connectionLost;
+        this.connectionLost = connectionLost;
 
-        private readonly T api = new();
+        connectionLostCounter = 0;
 
-        private uint connectionLostCounter;
-
-        public KeepWebSocketConnected(ILogger<KeepWebSocketConnected<T>> logger, IRetryPolicy policy, WebSocketClient<T> client,
-            Condition<ApplicationStart> applicationStart, Condition<ApplicationStop> applicationStop, Condition<WebSocketConnectionLost<T>> connectionLost)
+        if (applicationStart != null)
         {
-            this.logger = logger;
-            this.policy = policy;
-
-            this.client = client;
-
-            this.connectionLost = connectionLost;
-
-            connectionLostCounter = 0;
-
-            if (applicationStart != null)
-                applicationStart.When += OnApplicationStart;
-
-            if (applicationStop != null)
-                applicationStop.When += OnApplicationStop;
-
-            if (connectionLost != null)
-                connectionLost.When += OnConnectionLost;
+            applicationStart.When += OnApplicationStart;
         }
 
-        public void OnCreated()
+        if (applicationStop != null)
         {
-            logger.LogInformation($"I try to keep connected to the {api.Name}.");
+            applicationStop.When += OnApplicationStop;
         }
 
-        public virtual Task Open()
+        if (connectionLost != null)
         {
-            return policy.Run(() => client.Connect());
+            connectionLost.When += OnConnectionLost;
         }
+    }
 
-        private Task OnApplicationStart()
-        {
-            logger.LogDebug($"Establishing {api.Name} websocket connection on application startup.");
+    public void OnCreated()
+    {
+        logger.LogInformation($"I try to keep connected to the {api.Name}.");
+    }
 
-            return Open();
-        }
+    public virtual Task Open()
+    {
+        return policy.Run(() => client.Connect());
+    }
 
-        private async Task OnApplicationStop()
-        {
-            logger.LogDebug($"Closing {api.Name} websocket connection.");
+    private Task OnApplicationStart()
+    {
+        logger.LogDebug($"Establishing {api.Name} websocket connection on application startup.");
 
-            connectionLost.When -= OnConnectionLost;
+        return Open();
+    }
 
-            await client.Close();
+    private async Task OnApplicationStop()
+    {
+        logger.LogDebug($"Closing {api.Name} websocket connection.");
 
-            logger.LogInformation($"{api.Name} websocket is now closed.");
-            logger.LogInformation($"Total times connection to {api.Name} was lost: {connectionLostCounter}.");
-        }
+        connectionLost.When -= OnConnectionLost;
 
-        private Task OnConnectionLost()
-        {
-            connectionLostCounter += 1;
+        await client.Close();
 
-            logger.LogInformation($"{api.Name} websocket connection was lost for the {connectionLostCounter}. time, trying to re-establish connection.");
+        logger.LogInformation($"{api.Name} websocket is now closed.");
+        logger.LogInformation($"Total times connection to {api.Name} was lost: {connectionLostCounter}.");
+    }
 
-            return Open();
-        }
+    private Task OnConnectionLost()
+    {
+        connectionLostCounter += 1;
+
+        logger.LogInformation($"{api.Name} websocket connection was lost for the {connectionLostCounter}. time, trying to re-establish connection.");
+
+        return Open();
     }
 }

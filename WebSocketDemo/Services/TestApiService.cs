@@ -5,42 +5,44 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using WebSocketDemo.Models;
+using WebSocketDemo.Services.Interfaces;
 
-namespace WebSocketDemo.Services
+namespace WebSocketDemo.Services;
+
+public class TestApiService : ITestApiService
 {
-    public class TestApiService : ITestApiService
+    private readonly ILogger<TestApiService> logger;
+    private readonly WebSocketClient<TestApi> client;
+
+    public TestApiService(
+        ILogger<TestApiService> logger, WebSocketClient<TestApi> client)
     {
-        private readonly ILogger<TestApiService> logger;
-        private readonly WebSocketClient<TestApi> client;
+        this.logger = logger;
 
-        public TestApiService(
-            ILogger<TestApiService> logger, WebSocketClient<TestApi> client)
+        this.client = client;
+    }
+
+    public async Task ReceiveMessage(CancellationToken cancellationToken)
+    {
+        var message = await client.Receive(cancellationToken);
+
+        if (message == string.Empty)
         {
-            this.logger = logger;
-
-            this.client = client;
+            return;
         }
 
-        public async Task ReceiveMessage(CancellationToken cancellationToken)
+        try
         {
-            var message = await client.Receive(cancellationToken);
-
-            if (message == string.Empty)
-                return;
-
-            try
-            {
-                logger.LogDebug($"Received message: {message}");
-            }
-            catch (Exception e)
-            {
-                logger.LogWarning($"Rejecting message due to unhandled exception: {e.Message} {e.StackTrace}");
-            }
+            logger.LogDebug($"Received message: {message}");
         }
-
-        public Task SendHeartbeat(long requestId)
+        catch (Exception e)
         {
-            throw new NotImplementedException();
+            logger.LogWarning($"Rejecting message due to unhandled exception: {e.Message} {e.StackTrace}");
         }
+    }
+
+    public Task SendHeartbeat(long requestId)
+    {
+        throw new NotImplementedException();
     }
 }
