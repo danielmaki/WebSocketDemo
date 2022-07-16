@@ -1,29 +1,12 @@
-﻿using System.Threading.Tasks;
-
-using Microsoft.Extensions.Hosting;
-
+﻿using Microsoft.Extensions.Hosting;
 using WebSocketDemo.Hosting;
 
-namespace WebSocketDemo
-{
-    class Program
-    {
-        public static async Task Main(string[] args)
-        {
-            using IHost host = CreateHostBuilder(args).Build();
+var host = Host.CreateDefaultBuilder(args);
 
-            await host.RunAsync();
-        }
+host.UseLifetime();
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            var host = Host.CreateDefaultBuilder(args);
+host.UseAppServices();
 
-            host.UseLifetime();
+var app = host.Build();
 
-            host.UseAppServices();
-
-            return host;
-        }
-    }
-}
+await app.RunAsync();
