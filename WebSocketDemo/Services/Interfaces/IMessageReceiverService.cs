@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace WebSocketDemo.Services.Interfaces;
+﻿namespace WebSocketDemo.Services.Interfaces;
 
 /// <summary>
 /// Service for receiving messages asynchronously.

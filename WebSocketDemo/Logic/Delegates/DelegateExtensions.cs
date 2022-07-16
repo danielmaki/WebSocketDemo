@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WebSocketDemo.Logic.Delegates;
+﻿namespace WebSocketDemo.Logic.Delegates;
 
 public static class DelegateExtensions
 {

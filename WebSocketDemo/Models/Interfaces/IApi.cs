@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WebSocketDemo.Models.Interfaces;
+﻿namespace WebSocketDemo.Models.Interfaces;
 
 public interface IApi
 {

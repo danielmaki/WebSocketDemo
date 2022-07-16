@@ -1,5 +1,4 @@
-﻿using System;
-using WebSocketDemo.Models.Interfaces;
+﻿using WebSocketDemo.Models.Interfaces;
 
 namespace WebSocketDemo.Models;
 
@@ -12,6 +11,6 @@ public class TestApi : IApi
     public TestApi()
     {
         Name = "TEST API";
-        Endpoint = new Uri("wss://stream.crypto.com/v2/market");
+        Endpoint = new Uri("wss://stream.binance.com:9443/ws");
     }
 }

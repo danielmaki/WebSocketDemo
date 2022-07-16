@@ -1,5 +1,4 @@
-﻿using System.Threading;
-
+﻿
 using Microsoft.Extensions.Hosting;
 
 namespace WebSocketDemo.Services.Providers;

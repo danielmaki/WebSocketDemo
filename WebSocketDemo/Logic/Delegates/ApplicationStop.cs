@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace WebSocketDemo.Logic.Delegates;
+﻿namespace WebSocketDemo.Logic.Delegates;
 
 /// <summary>
 /// Delegate that is invoked when application is stopping.

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 using WebSocketDemo.Logic.Delegates;
 using WebSocketDemo.Models.Wrappers;
@@ -61,8 +58,6 @@ public class Trigger<T> where T : Delegate
         {
             try
             {
-                logger.LogDebug($"Trigger {description}");
-
                 Invoke(description, args).Wait(applicationCancellationToken.Token);
             }
             catch (OperationCanceledException)

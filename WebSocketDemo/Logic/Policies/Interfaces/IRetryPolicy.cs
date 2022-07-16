@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace WebSocketDemo.Logic.Policies.Interfaces;
+﻿namespace WebSocketDemo.Logic.Policies.Interfaces;
 
 /// <summary>
 /// Handles execution of asynchronous actions.

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace WebSocketDemo.Services.Interfaces;
+﻿namespace WebSocketDemo.Services.Interfaces;
 
 public interface ITestApiService : IMessageReceiverService
 {

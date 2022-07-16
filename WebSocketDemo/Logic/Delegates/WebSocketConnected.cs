@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using WebSocketDemo.Models.Interfaces;
+﻿using WebSocketDemo.Models.Interfaces;
 
 namespace WebSocketDemo.Logic.Delegates;
 
