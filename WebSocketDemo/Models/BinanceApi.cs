@@ -11,6 +11,6 @@ public class BinanceApi : IApi
     public BinanceApi()
     {
         Name = "Binance API";
-        Endpoint = new Uri("wss://stream.binance.com:9443/ws");
+        Endpoint = new Uri("wss://stream.binance.com:9443/ws"); // TODO: Refactor hardcoded values into appsettings
     }
 }

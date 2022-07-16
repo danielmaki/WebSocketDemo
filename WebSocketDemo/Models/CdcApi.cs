@@ -11,6 +11,6 @@ public class CdcApi : IApi
     public CdcApi()
     {
         Name = "Crypto.com API";
-        Endpoint = new Uri("wss://stream.crypto.com/v2/market");
+        Endpoint = new Uri("wss://stream.crypto.com/v2/market"); // TODO: Refactor hardcoded values into appsettings
     }
 }
